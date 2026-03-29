@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block title %}Life Hub — Dashboard{% endblock %}
+{% block content %}
+
+<!-- Header -->
+<div class="flex justify-between items-center mb-4">
+    <div>
+        <h1 class="text-xl font-bold">Life Hub</h1>
+        <p class="text-sm text-zinc-500">{{ today }}</p>
+    </div>
+    {% if location and not location.get('_empty') %}
+    <div class="text-right text-sm text-zinc-400">
+        📍 {{ location.place }}, {{ location.country }}
+    </div>
+    {% endif %}
+</div>
+
+<!-- Domain Scores -->
+<div class="mb-6">
+    <h2 class="text-sm font-semibold text-zinc-400 mb-2 uppercase tracking-wider">Score dnia</h2>
+    <div class="flex justify-between gap-2">
+        {% set domains = [
+            ('Training', daily.get('score_training'), '#3b82f6'),
+            ('Nutrition', daily.get('score_nutrition'), '#22c55e'),
+            ('Finance', daily.get('score_finance'), '#eab308'),
+            ('YouTube', daily.get('score_youtube'), '#ef4444'),
+            ('Personal', daily.get('score_personal'), '#a855f7'),
+        ] %}
+        {% for name, score, color in domains %}
+        <div class="flex flex-col items-center">
+            <div class="score-ring border-2" style="border-color: {{ color if score else '#3f3f46' }}; color: {{ color if score else '#71717a' }}">
+                {{ '%.0f'|format(score) if score else '—' }}
+            </div>
+            <span class="text-xs text-zinc-500 mt-1">{{ name[:4] }}</span>
+        </div>
+        {% endfor %}
+        <div class="flex flex-col items-center">
+            <div class="score-ring border-2" style="border-color: {{ '#f5f5f5' if daily.get('score_total') else '#3f3f46' }}; color: {{ '#f5f5f5' if daily.get('score_total') else '#71717a' }}">
+                {{ '%.1f'|format(daily.score_total) if daily.get('score_total') else '—' }}
+            </div>
+            <span class="text-xs text-zinc-500 mt-1">Total</span>
+        </div>
+    </div>
+</div>
+
+<!-- Macros -->
+<div class="mb-6">
+    <h2 class="text-sm font-semibold text-zinc-400 mb-2 uppercase tracking-wider">Żywienie</h2>
+    <div class="grid grid-cols-2 gap-3">
+        {% set cal = daily.get('calories_total', 0) or 0 %}
+        {% set prot = daily.get('protein_total', 0) or 0 %}
+        <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-3">
+            <div class="text-zinc-500 text-xs">Kalorie</div>
+            <div class="text-2xl font-bold">{{ cal }}</div>
+            <div class="w-full bg-zinc-800 rounded-full h-1.5 mt-1">
+                <div class="bg-orange-500 h-1.5 rounded-full" style="width: {{ [cal/1700*100, 100]|min }}%"></div>
+            </div>
+            <div class="text-xs text-zinc-600 mt-0.5">/ 1700 kcal</div>
+        </div>
+        <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-3">
+            <div class="text-zinc-500 text-xs">Białko</div>
+            <div class="text-2xl font-bold {% if prot >= 140 %}text-green-400{% elif prot >= 100 %}text-yellow-400{% endif %}">{{ prot }}g</div>
+            <div class="w-full bg-zinc-800 rounded-full h-1.5 mt-1">
+                <div class="bg-green-500 h-1.5 rounded-full" style="width: {{ [prot/140*100, 100]|min }}%"></div>
+            </div>
+            <div class="text-xs text-zinc-600 mt-0.5">/ 140g cel</div>
+        </div>
+    </div>
+    {% set meals = daily.get('meals', []) %}
+    {% if meals %}
+    <div class="mt-2 space-y-1">
+        {% for m in meals %}
+        <div class="text-sm text-zinc-400 flex justify-between">
+            <span>{% if m.get('time') %}<span class="text-zinc-600">{{ m.time }}</span> {% endif %}{{ m.description[:40] }}</span>
+            <span class="text-zinc-500">{{ m.get('calories', '') }} kcal</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+<!-- Training -->
+<div class="mb-6">
+    <h2 class="text-sm font-semibold text-zinc-400 mb-2 uppercase tracking-wider">Trening</h2>
+    <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-3">
+        {% if daily.get('training_type') %}
+        <div class="flex items-center gap-2">
+            {% if daily.get('training_completed') %}
+            <span class="text-green-400">✓</span>
+            {% else %}
+            <span class="text-zinc-600">○</span>
+            {% endif %}
+            <span class="font-medium">{{ daily.training_type|capitalize }}</span>
+            {% if daily.get('stretching_done') %}<span class="text-xs bg-blue-900/40 text-blue-300 px-1.5 py-0.5 rounded">stretch</span>{% endif %}
+        </div>
+        {% if daily.get('training_notes') %}
+        <p class="text-sm text-zinc-500 mt-1">{{ daily.training_notes[:80] }}{% if daily.training_notes|length > 80 %}...{% endif %}</p>
+        {% endif %}
+        {% else %}
+        {% if plan and not plan.get('_empty') %}
+            {% set schedule = plan.get('schedule', []) %}
+            {% set weekdays = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'] %}
+            {% set today_idx = (today | default('2026-03-29')).__class__.__name__ %}
+            <p class="text-zinc-500 text-sm">Brak danych. Plan na dziś sprawdź w /hub.</p>
+        {% else %}
+        <p class="text-zinc-500 text-sm">Brak danych o treningu.</p>
+        {% endif %}
+        {% endif %}
+    </div>
+</div>
+
+<!-- Wellbeing -->
+{% if daily.get('energy') or daily.get('mental') or daily.get('body') or daily.get('sleep_quality') %}
+<div class="mb-6">
+    <h2 class="text-sm font-semibold text-zinc-400 mb-2 uppercase tracking-wider">Samopoczucie</h2>
+    <div class="grid grid-cols-4 gap-2">
+        {% for label, val in [('Energia', daily.get('energy')), ('Głowa', daily.get('mental')), ('Ciało', daily.get('body')), ('Sen', daily.get('sleep_quality'))] %}
+        <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-center">
+            <div class="text-xs text-zinc-500">{{ label }}</div>
+            <div class="text-lg font-bold {% if val and val >= 7 %}text-green-400{% elif val and val <= 4 %}text-red-400{% endif %}">{{ val or '—' }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Streaks -->
+{% if streaks %}
+<div class="mb-6">
+    <h2 class="text-sm font-semibold text-zinc-400 mb-2 uppercase tracking-wider">Streaki</h2>
+    <div class="flex flex-wrap gap-2">
+        {% for s in streaks %}
+        <div class="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-sm">
+            <span class="text-zinc-400">{{ s.metric|replace('_', ' ')|title }}</span>
+            <span class="font-bold ml-1 {% if s.current_streak >= 5 %}text-orange-400{% elif s.current_streak >= 3 %}text-yellow-400{% endif %}">{{ s.current_streak }}🔥</span>
+            <span class="text-zinc-600 text-xs ml-1">best {{ s.longest_streak }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- 7-day averages -->
+<div class="mb-6">
+    <h2 class="text-sm font-semibold text-zinc-400 mb-2 uppercase tracking-wider">Średnie 7 dni</h2>
+    <div class="grid grid-cols-3 gap-2 text-sm">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-center">
+            <div class="text-xs text-zinc-500">Białko</div>
+            <div class="font-bold">{{ '%.0f'|format(protein_avg.avg_protein) if protein_avg.avg_protein else '—' }}g</div>
+        </div>
+        <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-center">
+            <div class="text-xs text-zinc-500">Score</div>
+            <div class="font-bold">{{ '%.1f'|format(score_avg.avg_total) if score_avg.avg_total else '—' }}</div>
+        </div>
+        <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-center">
+            <div class="text-xs text-zinc-500">Dane</div>
+            <div class="font-bold">{{ protein_avg.data_points }}/7 dni</div>
+        </div>
+    </div>
+</div>
+
+<!-- Goals -->
+{% if goals %}
+<div class="mb-6">
+    <h2 class="text-sm font-semibold text-zinc-400 mb-2 uppercase tracking-wider">Cele</h2>
+    {% for g in goals[:3] %}
+    <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-3 mb-2">
+        <div class="flex justify-between items-center">
+            <span class="font-medium text-sm">{{ g.title }}</span>
+            <span class="text-xs text-zinc-500">{{ g.domain }}</span>
+        </div>
+        {% if g.progress_pct is not none %}
+        <div class="w-full bg-zinc-800 rounded-full h-1.5 mt-2">
+            <div class="bg-violet-500 h-1.5 rounded-full" style="width: {{ g.progress_pct }}%"></div>
+        </div>
+        <div class="text-xs text-zinc-500 mt-0.5">{{ '%.0f'|format(g.progress_pct) }}% — {{ g.current_value }} / {{ g.target_value }} {{ g.unit or '' }}</div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% endblock %}

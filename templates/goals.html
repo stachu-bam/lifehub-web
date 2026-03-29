@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Life Hub — Cele{% endblock %}
+{% block content %}
+
+<h1 class="text-xl font-bold mb-4">Cele</h1>
+
+{% if not goals %}
+<p class="text-zinc-500">Brak celów. Dodaj przez <code>db_client.py</code> lub /hub.</p>
+{% else %}
+{% set domains_seen = [] %}
+{% for g in goals %}
+    {% if g.domain not in domains_seen %}
+        {% if domains_seen %}
+        </div>
+        {% endif %}
+        <h2 class="text-sm font-semibold text-zinc-400 mt-4 mb-2 uppercase tracking-wider">{{ g.domain }}</h2>
+        <div class="space-y-2">
+        {% set _ = domains_seen.append(g.domain) %}
+    {% endif %}
+    <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-3">
+        <div class="flex justify-between items-center">
+            <span class="font-medium">{{ g.title }}</span>
+            <span class="text-xs px-1.5 py-0.5 rounded {% if g.status == 'active' %}bg-green-900/40 text-green-400{% elif g.status == 'completed' %}bg-blue-900/40 text-blue-400{% elif g.status == 'paused' %}bg-yellow-900/40 text-yellow-400{% else %}bg-zinc-800 text-zinc-500{% endif %}">{{ g.status }}</span>
+        </div>
+        {% if g.get('description') %}
+        <p class="text-sm text-zinc-500 mt-1">{{ g.description }}</p>
+        {% endif %}
+        {% if g.progress_pct is not none %}
+        <div class="w-full bg-zinc-800 rounded-full h-2 mt-2">
+            <div class="bg-violet-500 h-2 rounded-full transition-all" style="width: {{ g.progress_pct }}%"></div>
+        </div>
+        <div class="flex justify-between text-xs text-zinc-500 mt-1">
+            <span>{{ g.get('start_value', g.get('current_value', 0)) }} {{ g.unit or '' }}</span>
+            <span class="font-medium {% if g.progress_pct >= 80 %}text-green-400{% elif g.progress_pct >= 50 %}text-yellow-400{% endif %}">{{ '%.0f'|format(g.progress_pct) }}%</span>
+            <span>{{ g.target_value }} {{ g.unit or '' }}</span>
+        </div>
+        {% endif %}
+        {% set milestones = g.get('milestones', []) %}
+        {% if milestones %}
+        <div class="mt-2 space-y-1">
+            {% for m in milestones %}
+            <div class="flex items-center gap-2 text-xs">
+                {% if m.get('completed_at') %}
+                <span class="text-green-400">✓</span>
+                {% else %}
+                <span class="text-zinc-600">○</span>
+                {% endif %}
+                <span class="{% if m.get('completed_at') %}text-zinc-500 line-through{% else %}text-zinc-400{% endif %}">{{ m.label }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% if g.get('deadline') %}
+        <div class="text-xs text-zinc-600 mt-1">Deadline: {{ g.deadline }}</div>
+        {% endif %}
+    </div>
+{% endfor %}
+{% if domains_seen %}</div>{% endif %}
+{% endif %}
+
+{% endblock %}

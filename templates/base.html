@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Life Hub{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <style>
+        body { background: #09090b; color: #e4e4e7; }
+        .score-ring { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; }
+        .tab-active { border-bottom: 2px solid #a78bfa; color: #a78bfa; }
+        .tab-inactive { border-bottom: 2px solid transparent; color: #71717a; }
+        input[type="range"] { accent-color: #a78bfa; }
+        .htmx-indicator { display: none; }
+        .htmx-request .htmx-indicator { display: inline; }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Nav -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-800 z-50 safe-area-bottom">
+        <div class="max-w-lg mx-auto flex justify-around py-2">
+            <a href="/" class="flex flex-col items-center px-3 py-1 {% if request.path == '/' %}text-violet-400{% else %}text-zinc-500{% endif %}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0v-5a2 2 0 114 0v5"/></svg>
+                <span class="text-xs mt-0.5">Hub</span>
+            </a>
+            <a href="/log" class="flex flex-col items-center px-3 py-1 {% if request.path == '/log' %}text-violet-400{% else %}text-zinc-500{% endif %}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                <span class="text-xs mt-0.5">Input</span>
+            </a>
+            <a href="/history" class="flex flex-col items-center px-3 py-1 {% if request.path == '/history' %}text-violet-400{% else %}text-zinc-500{% endif %}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                <span class="text-xs mt-0.5">Historia</span>
+            </a>
+            <a href="/goals" class="flex flex-col items-center px-3 py-1 {% if request.path == '/goals' %}text-violet-400{% else %}text-zinc-500{% endif %}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                <span class="text-xs mt-0.5">Cele</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Content -->
+    <main class="max-w-lg mx-auto px-4 pt-4 pb-24">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>
