@@ -1,46 +1,81 @@
 <!DOCTYPE html>
-<html lang="pl" class="dark">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Life Hub{% endblock %}</title>
+    <title>{% block title %}LIFE HUB{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            fontFamily: { sans: ['Archivo', 'sans-serif'] },
+            extend: {
+                colors: {
+                    bg: '#0D0D0D',
+                    surface: '#1A1A1A',
+                    brd: '#2A2A2A',
+                    brand: '#5C1A1A',
+                    'brand-light': '#7A2E2E',
+                    accent: '#F2B705',
+                    'accent-dim': '#A37D04',
+                    txt: '#F5F5F5',
+                    muted: '#4A4A4A',
+                    mid: '#717171',
+                },
+                borderRadius: { none: '0', DEFAULT: '0' },
+            }
+        }
+    }
+    </script>
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
     <style>
-        body { background: #09090b; color: #e4e4e7; }
-        .score-ring { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; }
-        .tab-active { border-bottom: 2px solid #a78bfa; color: #a78bfa; }
-        .tab-inactive { border-bottom: 2px solid transparent; color: #71717a; }
-        input[type="range"] { accent-color: #a78bfa; }
+        * { border-radius: 0 !important; }
+        body { background: #0D0D0D; color: #F5F5F5; font-family: 'Archivo', sans-serif; }
+        .section-title { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; color: #4A4A4A; }
+        .card { background: #1A1A1A; border: 2px solid #2A2A2A; padding: 1rem; cursor: pointer; transition: border-color 0.15s; }
+        .card:hover { border-color: #5C1A1A; }
+        .card-static { background: #1A1A1A; border: 2px solid #2A2A2A; padding: 1rem; }
+        .score-box { width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem; border: 2px solid #2A2A2A; }
+        .score-box.has-score { border-color: #5C1A1A; color: #F2B705; }
+        .bar { height: 4px; background: #2A2A2A; }
+        .bar-fill { height: 4px; }
+        .tab-active { border-bottom: 3px solid #F2B705; color: #F2B705; font-weight: 700; }
+        .tab-inactive { border-bottom: 3px solid transparent; color: #4A4A4A; font-weight: 600; }
+        .btn-primary { background: #5C1A1A; color: #F5F5F5; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; border: 2px solid #7A2E2E; }
+        .btn-primary:hover { background: #7A2E2E; }
+        .detail-panel { display: none; }
+        .detail-panel.open { display: block; }
+        input, select, textarea { background: #1A1A1A !important; border: 2px solid #2A2A2A !important; color: #F5F5F5 !important; font-family: 'Archivo', sans-serif !important; }
+        input:focus, select:focus, textarea:focus { border-color: #5C1A1A !important; outline: none !important; }
+        input[type="range"] { accent-color: #F2B705; }
+        input[type="checkbox"] { accent-color: #5C1A1A; }
         .htmx-indicator { display: none; }
         .htmx-request .htmx-indicator { display: inline; }
     </style>
 </head>
 <body class="min-h-screen">
     <!-- Nav -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-800 z-50 safe-area-bottom">
+    <nav class="fixed bottom-0 left-0 right-0 bg-surface border-t-2 border-brand z-50">
         <div class="max-w-lg mx-auto flex justify-around py-2">
-            <a href="/" class="flex flex-col items-center px-3 py-1 {% if request.path == '/' %}text-violet-400{% else %}text-zinc-500{% endif %}">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0v-5a2 2 0 114 0v5"/></svg>
-                <span class="text-xs mt-0.5">Hub</span>
+            {% set nav_items = [
+                ('/', 'HUB', 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0v-5a2 2 0 114 0v5'),
+                ('/log', 'INPUT', 'M12 4v16m8-8H4'),
+                ('/history', 'LOG', 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'),
+                ('/goals', 'CELE', 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'),
+            ] %}
+            {% for href, label, path_d in nav_items %}
+            <a href="{{ href }}" class="flex flex-col items-center px-3 py-1 {% if request.path == href %}text-accent{% else %}text-muted{% endif %}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ path_d }}"/></svg>
+                <span class="text-[10px] font-bold tracking-wider mt-0.5">{{ label }}</span>
             </a>
-            <a href="/log" class="flex flex-col items-center px-3 py-1 {% if request.path == '/log' %}text-violet-400{% else %}text-zinc-500{% endif %}">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                <span class="text-xs mt-0.5">Input</span>
-            </a>
-            <a href="/history" class="flex flex-col items-center px-3 py-1 {% if request.path == '/history' %}text-violet-400{% else %}text-zinc-500{% endif %}">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                <span class="text-xs mt-0.5">Historia</span>
-            </a>
-            <a href="/goals" class="flex flex-col items-center px-3 py-1 {% if request.path == '/goals' %}text-violet-400{% else %}text-zinc-500{% endif %}">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-                <span class="text-xs mt-0.5">Cele</span>
-            </a>
+            {% endfor %}
         </div>
     </nav>
 
     <!-- Content -->
-    <main class="max-w-lg mx-auto px-4 pt-4 pb-24">
+    <main class="max-w-lg mx-auto px-4 pt-6 pb-24">
         {% block content %}{% endblock %}
     </main>
 </body>

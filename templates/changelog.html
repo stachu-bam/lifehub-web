@@ -1,22 +1,22 @@
 {% extends "base.html" %}
-{% block title %}Life Hub — Changelog{% endblock %}
+{% block title %}LIFE HUB — CHANGELOG{% endblock %}
 {% block content %}
 
-<h1 class="text-xl font-bold mb-4">Changelog</h1>
+<h1 class="text-2xl font-black tracking-tight mb-6">CHANGELOG</h1>
 
 {% if not changes %}
-<p class="text-zinc-500">Brak zmian.</p>
+<p class="text-muted font-semibold">BRAK ZMIAN</p>
 {% else %}
-<div class="space-y-2">
+<div class="space-y-3">
     {% for c in changes %}
-    <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-3">
+    <div class="card-static">
         <div class="flex justify-between items-center">
-            <span class="text-xs px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400">{{ c.change_type }}</span>
-            <span class="text-xs text-zinc-600">{{ c.date }} · {{ c.changed_by }}</span>
+            <span class="text-[10px] font-bold bg-brand px-2 py-0.5 text-txt border border-brand-light uppercase tracking-wider">{{ c.change_type }}</span>
+            <span class="text-[10px] text-muted font-mono">{{ c.date }} / {{ c.changed_by|upper }}</span>
         </div>
-        <p class="text-sm mt-1">{{ c.what_changed }}</p>
+        <p class="text-sm font-bold mt-2">{{ c.what_changed }}</p>
         {% if c.get('reason') %}
-        <p class="text-xs text-zinc-500 mt-0.5">{{ c.reason }}</p>
+        <p class="text-xs text-mid mt-1">{{ c.reason }}</p>
         {% endif %}
     </div>
     {% endfor %}

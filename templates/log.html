@@ -1,154 +1,134 @@
 {% extends "base.html" %}
-{% block title %}Life Hub — Input{% endblock %}
+{% block title %}LIFE HUB — INPUT{% endblock %}
 {% block content %}
 
-<h1 class="text-xl font-bold mb-4">Quick Input</h1>
+<h1 class="text-2xl font-black tracking-tight mb-6">INPUT</h1>
 
 <!-- Tabs -->
-<div class="flex gap-1 mb-4 border-b border-zinc-800" id="tabs">
-    <button onclick="showTab('meal')" id="tab-meal" class="px-4 py-2 text-sm tab-active">Posiłek</button>
-    <button onclick="showTab('training')" id="tab-training" class="px-4 py-2 text-sm tab-inactive">Trening</button>
-    <button onclick="showTab('wellbeing')" id="tab-wellbeing" class="px-4 py-2 text-sm tab-inactive">Samopoczucie</button>
-    <button onclick="showTab('expense')" id="tab-expense" class="px-4 py-2 text-sm tab-inactive">Wydatek</button>
+<div class="flex gap-0 mb-6 border-b-2 border-brd" id="tabs">
+    <button onclick="showTab('meal')" id="tab-meal" class="px-4 py-2 text-xs font-bold tracking-wider tab-active">POSILEK</button>
+    <button onclick="showTab('training')" id="tab-training" class="px-4 py-2 text-xs font-bold tracking-wider tab-inactive">TRENING</button>
+    <button onclick="showTab('wellbeing')" id="tab-wellbeing" class="px-4 py-2 text-xs font-bold tracking-wider tab-inactive">MOOD</button>
+    <button onclick="showTab('expense')" id="tab-expense" class="px-4 py-2 text-xs font-bold tracking-wider tab-inactive">WYDATEK</button>
 </div>
 
 <!-- Meal Tab -->
 <div id="panel-meal">
-    <form hx-post="/api/log-meal" hx-target="#meal-result" hx-swap="innerHTML" class="space-y-3">
+    <form hx-post="/api/log-meal" hx-target="#meal-result" hx-swap="innerHTML" class="space-y-4">
         <div>
-            <label class="text-xs text-zinc-500">Godzina</label>
-            <input type="time" name="time" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm">
+            <label class="text-[10px] font-bold text-muted tracking-wider block mb-1">GODZINA</label>
+            <input type="time" name="time" class="w-full px-3 py-2 text-sm">
         </div>
         <div>
-            <label class="text-xs text-zinc-500">Opis posiłku</label>
-            <input type="text" name="description" placeholder="np. tost z jajkiem + mleko prot" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm" required>
+            <label class="text-[10px] font-bold text-muted tracking-wider block mb-1">OPIS</label>
+            <input type="text" name="description" placeholder="np. tost z jajkiem + mleko prot" class="w-full px-3 py-2 text-sm" required>
         </div>
-        <div class="grid grid-cols-2 gap-2">
+        <div class="grid grid-cols-2 gap-3">
             <div>
-                <label class="text-xs text-zinc-500">kcal</label>
-                <input type="number" name="calories" placeholder="0" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm">
+                <label class="text-[10px] font-bold text-muted tracking-wider block mb-1">KCAL</label>
+                <input type="number" name="calories" placeholder="0" class="w-full px-3 py-2 text-sm">
             </div>
             <div>
-                <label class="text-xs text-zinc-500">Białko (g)</label>
-                <input type="number" name="protein" placeholder="0" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm">
-            </div>
-        </div>
-        <div class="grid grid-cols-2 gap-2">
-            <div>
-                <label class="text-xs text-zinc-500">Tłuszcz (g)</label>
-                <input type="number" name="fat" placeholder="0" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm">
-            </div>
-            <div>
-                <label class="text-xs text-zinc-500">Węgle (g)</label>
-                <input type="number" name="carbs" placeholder="0" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm">
+                <label class="text-[10px] font-bold text-muted tracking-wider block mb-1">BIALKO (G)</label>
+                <input type="number" name="protein" placeholder="0" class="w-full px-3 py-2 text-sm">
             </div>
         </div>
-        <button type="submit" class="w-full bg-violet-600 hover:bg-violet-500 text-white rounded-lg py-2.5 text-sm font-medium">
-            Zapisz posiłek
-        </button>
+        <div class="grid grid-cols-2 gap-3">
+            <div>
+                <label class="text-[10px] font-bold text-muted tracking-wider block mb-1">TLUSZCZ (G)</label>
+                <input type="number" name="fat" placeholder="0" class="w-full px-3 py-2 text-sm">
+            </div>
+            <div>
+                <label class="text-[10px] font-bold text-muted tracking-wider block mb-1">WEGLE (G)</label>
+                <input type="number" name="carbs" placeholder="0" class="w-full px-3 py-2 text-sm">
+            </div>
+        </div>
+        <button type="submit" class="btn-primary w-full py-3 text-sm">ZAPISZ POSILEK</button>
     </form>
-    <div id="meal-result" class="mt-3"></div>
-
-    <!-- Scoring info -->
-    <div class="mt-4 p-3 bg-zinc-900 border border-zinc-800 rounded-lg text-xs text-zinc-500">
-        <p class="font-semibold text-zinc-400 mb-1">Scoring żywienia:</p>
-        <p>Kalorie 1500-1700 = pełne punkty. Białko ≥140g = max. Zasady żywieniowe do przebudowy.</p>
-    </div>
+    <div id="meal-result" class="mt-4"></div>
 </div>
 
 <!-- Training Tab -->
 <div id="panel-training" class="hidden">
-    <form hx-post="/api/log-training" hx-target="#training-result" hx-swap="innerHTML" class="space-y-3">
+    <form hx-post="/api/log-training" hx-target="#training-result" hx-swap="innerHTML" class="space-y-4">
         <div>
-            <label class="text-xs text-zinc-500">Typ treningu</label>
-            <select name="training_type" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm">
-                <option value="">— wybierz —</option>
-                <option value="running">Bieganie</option>
-                <option value="bodyweight">Bodyweight</option>
-                <option value="swimming">Pływanie</option>
-                <option value="active_rest">Odpoczynek aktywny</option>
-                <option value="rest">Odpoczynek</option>
+            <label class="text-[10px] font-bold text-muted tracking-wider block mb-1">TYP</label>
+            <select name="training_type" class="w-full px-3 py-2 text-sm">
+                <option value="">— WYBIERZ —</option>
+                <option value="running">BIEGANIE</option>
+                <option value="bodyweight">BODYWEIGHT</option>
+                <option value="swimming">PLYWANIE</option>
+                <option value="active_rest">ODPOCZYNEK AKTYWNY</option>
+                <option value="rest">ODPOCZYNEK</option>
             </select>
         </div>
-        <div class="flex gap-4">
-            <label class="flex items-center gap-2 text-sm">
-                <input type="checkbox" name="training_completed" class="rounded bg-zinc-900 border-zinc-600">
-                Wykonany
+        <div class="flex gap-6">
+            <label class="flex items-center gap-2 text-xs font-bold tracking-wider">
+                <input type="checkbox" name="training_completed"> DONE
             </label>
-            <label class="flex items-center gap-2 text-sm">
-                <input type="checkbox" name="stretching_done" class="rounded bg-zinc-900 border-zinc-600">
-                Rozciąganie
+            <label class="flex items-center gap-2 text-xs font-bold tracking-wider">
+                <input type="checkbox" name="stretching_done"> STRETCH
             </label>
-            <label class="flex items-center gap-2 text-sm">
-                <input type="checkbox" name="balance_exercises" class="rounded bg-zinc-900 border-zinc-600">
-                Równowaga
+            <label class="flex items-center gap-2 text-xs font-bold tracking-wider">
+                <input type="checkbox" name="balance_exercises"> BALANCE
             </label>
         </div>
         <div>
-            <label class="text-xs text-zinc-500">Notatki</label>
-            <textarea name="training_notes" rows="2" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm" placeholder="np. 45 min, tempo 8:30, HR 158"></textarea>
+            <label class="text-[10px] font-bold text-muted tracking-wider block mb-1">NOTATKI</label>
+            <textarea name="training_notes" rows="2" class="w-full px-3 py-2 text-sm" placeholder="45 min, tempo 8:30, HR 158"></textarea>
         </div>
-        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white rounded-lg py-2.5 text-sm font-medium">
-            Zapisz trening
-        </button>
+        <button type="submit" class="btn-primary w-full py-3 text-sm">ZAPISZ TRENING</button>
     </form>
-    <div id="training-result" class="mt-3"></div>
-
-    <div class="mt-4 p-3 bg-zinc-900 border border-zinc-800 rounded-lg text-xs text-zinc-500">
-        <p class="font-semibold text-zinc-400 mb-1">Scoring treningu:</p>
-        <p>0=nic, 1=częściowo, 2=plan, 3=plan+stretch. Odpoczynek: 0=zero, 2=aktywny 15min+, 3=pełne active recovery.</p>
-    </div>
+    <div id="training-result" class="mt-4"></div>
 </div>
 
 <!-- Wellbeing Tab -->
 <div id="panel-wellbeing" class="hidden">
-    <form hx-post="/api/log-wellbeing" hx-target="#wellbeing-result" hx-swap="innerHTML" class="space-y-4">
+    <form hx-post="/api/log-wellbeing" hx-target="#wellbeing-result" hx-swap="innerHTML" class="space-y-5">
         {% for field, label, desc in [
-            ('energy', 'Energia', 'Ile masz energii? 1=ledwo, 10=full power'),
-            ('mental', 'Głowa', 'Nastrój, focus, spokój. 1=dno, 10=klarowność'),
-            ('body', 'Ciało', 'Jak się czujesz fizycznie? 1=wszystko boli, 10=świetnie'),
-            ('sleep_quality', 'Sen', 'Jakość snu. 1=koszmar, 10=obudziłem się wypoczęty'),
+            ('energy', 'ENERGIA', '1 = ledwo, 10 = full power'),
+            ('mental', 'GLOWA', '1 = dno, 10 = klarownosc'),
+            ('body', 'CIALO', '1 = boli, 10 = swietnie'),
+            ('sleep_quality', 'SEN', '1 = koszmar, 10 = wypoczyty'),
         ] %}
         <div>
-            <div class="flex justify-between">
-                <label class="text-sm font-medium">{{ label }}</label>
-                <span class="text-sm text-zinc-500" id="val-{{ field }}">—</span>
+            <div class="flex justify-between items-center">
+                <label class="text-[10px] font-bold text-muted tracking-wider">{{ label }}</label>
+                <span class="text-sm font-black text-accent" id="val-{{ field }}">—</span>
             </div>
-            <input type="range" name="{{ field }}" min="1" max="10" value="" class="w-full mt-1"
-                   oninput="document.getElementById('val-{{ field }}').textContent=this.value+'/10'">
-            <p class="text-xs text-zinc-600">{{ desc }}</p>
+            <input type="range" name="{{ field }}" min="1" max="10" class="w-full mt-1"
+                   oninput="document.getElementById('val-{{ field }}').textContent=this.value">
+            <p class="text-[10px] text-muted mt-0.5">{{ desc }}</p>
         </div>
         {% endfor %}
         <div>
-            <label class="text-xs text-zinc-500">Godziny snu</label>
-            <input type="number" name="sleep_hours" step="0.5" min="0" max="24" placeholder="np. 7.5" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm">
+            <label class="text-[10px] font-bold text-muted tracking-wider block mb-1">GODZINY SNU</label>
+            <input type="number" name="sleep_hours" step="0.5" min="0" max="24" placeholder="7.5" class="w-full px-3 py-2 text-sm">
         </div>
         <div>
-            <label class="text-xs text-zinc-500">Praca — mood (1-10, opcjonalne)</label>
-            <input type="number" name="work_mood" min="1" max="10" placeholder="—" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm">
+            <label class="text-[10px] font-bold text-muted tracking-wider block mb-1">PRACA — MOOD (1-10, OPCJONALNE)</label>
+            <input type="number" name="work_mood" min="1" max="10" class="w-full px-3 py-2 text-sm">
         </div>
         <div>
-            <label class="text-xs text-zinc-500">Notatki (opcjonalne)</label>
-            <textarea name="day_notes" rows="2" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm" placeholder="cokolwiek wartego zapamiętania"></textarea>
+            <label class="text-[10px] font-bold text-muted tracking-wider block mb-1">NOTATKI</label>
+            <textarea name="day_notes" rows="2" class="w-full px-3 py-2 text-sm" placeholder="cokolwiek wartego zapamietania"></textarea>
         </div>
-        <button type="submit" class="w-full bg-green-600 hover:bg-green-500 text-white rounded-lg py-2.5 text-sm font-medium">
-            Zapisz samopoczucie
-        </button>
+        <button type="submit" class="btn-primary w-full py-3 text-sm">ZAPISZ MOOD</button>
     </form>
-    <div id="wellbeing-result" class="mt-3"></div>
+    <div id="wellbeing-result" class="mt-4"></div>
 </div>
 
 <!-- Expense Tab -->
 <div id="panel-expense" class="hidden">
-    <form hx-post="/api/log-expense" hx-target="#expense-result" hx-swap="innerHTML" class="space-y-3">
-        <div class="grid grid-cols-3 gap-2">
+    <form hx-post="/api/log-expense" hx-target="#expense-result" hx-swap="innerHTML" class="space-y-4">
+        <div class="grid grid-cols-3 gap-3">
             <div class="col-span-2">
-                <label class="text-xs text-zinc-500">Kwota</label>
-                <input type="number" name="amount" step="0.01" placeholder="0" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm" required>
+                <label class="text-[10px] font-bold text-muted tracking-wider block mb-1">KWOTA</label>
+                <input type="number" name="amount" step="0.01" placeholder="0" class="w-full px-3 py-2 text-sm" required>
             </div>
             <div>
-                <label class="text-xs text-zinc-500">Waluta</label>
-                <select name="currency" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm">
+                <label class="text-[10px] font-bold text-muted tracking-wider block mb-1">WALUTA</label>
+                <select name="currency" class="w-full px-3 py-2 text-sm">
                     <option value="THB">THB</option>
                     <option value="PLN">PLN</option>
                     <option value="USD">USD</option>
@@ -156,34 +136,32 @@
             </div>
         </div>
         <div>
-            <label class="text-xs text-zinc-500">Kategoria</label>
-            <select name="category" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm">
-                <option value="jedzenie">Jedzenie</option>
-                <option value="transport">Transport</option>
-                <option value="nocleg">Nocleg</option>
-                <option value="rozrywka">Rozrywka</option>
-                <option value="zdrowie">Zdrowie</option>
-                <option value="uslugi">Usługi</option>
-                <option value="zakupy">Zakupy</option>
-                <option value="inne">Inne</option>
+            <label class="text-[10px] font-bold text-muted tracking-wider block mb-1">KATEGORIA</label>
+            <select name="category" class="w-full px-3 py-2 text-sm">
+                <option value="jedzenie">JEDZENIE</option>
+                <option value="transport">TRANSPORT</option>
+                <option value="nocleg">NOCLEG</option>
+                <option value="rozrywka">ROZRYWKA</option>
+                <option value="zdrowie">ZDROWIE</option>
+                <option value="uslugi">USLUGI</option>
+                <option value="zakupy">ZAKUPY</option>
+                <option value="inne">INNE</option>
             </select>
         </div>
         <div>
-            <label class="text-xs text-zinc-500">Opis</label>
-            <input type="text" name="description" placeholder="np. obiad pad thai" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm">
+            <label class="text-[10px] font-bold text-muted tracking-wider block mb-1">OPIS</label>
+            <input type="text" name="description" placeholder="np. obiad pad thai" class="w-full px-3 py-2 text-sm">
         </div>
-        <button type="submit" class="w-full bg-yellow-600 hover:bg-yellow-500 text-white rounded-lg py-2.5 text-sm font-medium">
-            Zapisz wydatek
-        </button>
+        <button type="submit" class="btn-primary w-full py-3 text-sm">ZAPISZ WYDATEK</button>
     </form>
-    <div id="expense-result" class="mt-3"></div>
+    <div id="expense-result" class="mt-4"></div>
 </div>
 
 <script>
 function showTab(tab) {
-    ['meal', 'training', 'wellbeing', 'expense'].forEach(t => {
-        document.getElementById('panel-' + t).classList.toggle('hidden', t !== tab);
-        document.getElementById('tab-' + t).className = t === tab ? 'px-4 py-2 text-sm tab-active' : 'px-4 py-2 text-sm tab-inactive';
+    ['meal','training','wellbeing','expense'].forEach(t => {
+        document.getElementById('panel-'+t).classList.toggle('hidden', t!==tab);
+        document.getElementById('tab-'+t).className = t===tab ? 'px-4 py-2 text-xs font-bold tracking-wider tab-active' : 'px-4 py-2 text-xs font-bold tracking-wider tab-inactive';
     });
 }
 </script>
